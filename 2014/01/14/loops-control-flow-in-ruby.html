@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      Ruby 中的循环控制语句
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan-382cd5216f5adfdabb4b8d78b112daab7ca8937bf0cdd94b524a7167de64ece8.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>Ruby 中的循环控制语句</h3>		
+	<time datetime="2014-01-14T00:00:00+08:00" class="by-line">14 Jan 2014</time>
+	<div class="content">
+		<p>Ruby 中常用到的循环控制语句包括：next, break, redo, retry 四种，下面就详细看看使用情景：</p>
+
+<h4 id="next">next</h4>
+<p>退出包含 next 的最内层循环的当前迭代，执行下一迭代</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8</pre></td><td class="code"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+  <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
+
+  <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
+    <span class="k">next</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>输出结果：</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+j: 2
+j: 4
+i: 1
+j: 2
+j: 4</code></pre></figure>
+
+<h4 id="break">break</h4>
+<p>退出包含 break 的最内层循环</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8</pre></td><td class="code"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+  <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
+
+  <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
+    <span class="k">break</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>输出结果：</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+j: 2
+i: 1
+j: 2</code></pre></figure>
+
+<h4 id="redo">redo</h4>
+<p>重新执行包含 redo 的最内层循环的当前迭代</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9</pre></td><td class="code"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+  <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
+
+  <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
+    <span class="nb">sleep</span> <span class="mi">3</span>
+    <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">redo</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>输出结果：</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+j: 2
+j: 3
+j: 3
+...  <span class="c"># 无限输出 j: # retry (Ruby 1.9 后移除)**</span></code></pre></figure>
+
+<h4 id="retry-ruby-19-">retry (Ruby 1.9 后移除)</h4>
+<p>重新执行包含 retry 的最内层循环</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre></td><td class="code"><pre><span class="c1"># 请使用 Ruby1.9 之前的版本运行</span>
+<span class="c1"># 否则会抛异常：SyntaxError: (eval):8: Invalid retry</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+  <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
+
+  <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
+    <span class="nb">sleep</span> <span class="mi">3</span>
+    <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">retry</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>输出结果：</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+j: 2
+j: 3
+j: 2
+j: 3
+...  <span class="c"># 无限交替输出 j: 2, j: 3</span></code></pre></figure>
+
+<p><strong>参考：</strong></p>
+
+<ol>
+  <li><a href="http://www.tutorialspoint.com/ruby/ruby_loops.htm">Ruby Loops - while, for, until, break, redo and retry</a></li>
+  <li><a href="http://ruby-doc.org/docs/keywords/1.9/">Ruby Keywords</a></li>
+</ol>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+
+  </body>
+</html>

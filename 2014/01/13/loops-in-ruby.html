@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      Ruby 中的循环语句
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan-382cd5216f5adfdabb4b8d78b112daab7ca8937bf0cdd94b524a7167de64ece8.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>Ruby 中的循环语句</h3>		
+	<time datetime="2014-01-13T00:00:00+08:00" class="by-line">13 Jan 2014</time>
+	<div class="content">
+		<p>由于 Ruby 提供了很多便捷的方法进行对象的循环遍历，如：Array#each, Integer#times, Integer#downto, Integer#upto, Kernel#loop 等，所以日常的开发中很少会需要写循环语句。便整理了相关内容，方便日后查看参考。Ruby 中的循环语句有 for..in, while 和 until 三种，具体使用方法如下：</p>
+
+<h3 id="for--in">for .. in</h3>
+<p>遍历集合中的所有成员</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>for i in 0..3
+  puts i
+end
+</code></pre>
+</div>
+
+<h3 id="while">while</h3>
+<p>当条件成立时，执行循环体</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>i = 0
+while i &lt;= 3 do  # do 可以省略
+  puts i
+  i += 1
+end
+</code></pre>
+</div>
+
+<p>while 可以后置，循环体至少执行一次</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>i = 0
+begin
+  puts i
+  i += 1
+end while i &lt;= 3
+</code></pre>
+</div>
+
+<h3 id="until">until</h3>
+<p>当条件不成立时，执行循环体</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>i = 0
+until i &gt; 3 do  # do 可以省略
+  puts i
+  i += 1
+end
+</code></pre>
+</div>
+
+<p>和 while 一样，until 也可以后置，循环体至少执行一次</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>i = 0
+begin
+  puts i
+  i += 1
+end until i &gt; 3
+</code></pre>
+</div>
+
+<p><strong>参考：</strong></p>
+
+<ol>
+  <li><a href="http://blog.csdn.net/daydreamingboy/article/details/6725328">Ruby学习札记(7)-Ruby中具有循环控制的方法和语句大归纳</a></li>
+  <li><a href="http://www.techotopia.com/index.php/Ruby_While_and_Until_Loops">Ruby While and Until Loops</a></li>
+  <li><a href="http://www.techotopia.com/index.php/Looping_with_for_and_the_Ruby_Looping_Methods">Looping with for and the Ruby Looping Methods</a></li>
+  <li><a href="http://www.tutorialspoint.com/ruby/ruby_loops.htm">Ruby Loops - while, for, until, break, redo and retry</a></li>
+</ol>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+
+  </body>
+</html>

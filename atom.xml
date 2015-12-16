@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Reyes Yang 的个人博客</title>
+ <link href="http://reyesyang.github.io//atom.xml" rel="self"/>
+ <id>http://reyesyang.github.io/</id>
+ <updated>2015-12-16T23:31:26+08:00</updated>
+ <author>
+   <name>Reyes Yang</name>
+   <uri>http://reyesyang.info</uri>
+   <email>reyes.yang@gmail.com</email>
+ </author>
+
+ 
+
+ <entry>
+   <title>git fetch, pull, checkout 和 push 简介</title>
+   <link href="http://reyesyang.github.io//2014/02/26/git-fetch-pull-checkout-push-introduction.html"/>
+   <id>http://reyesyang.github.io//2014/02/26/git-fetch-pull-checkout-push-introduction</id>
+   <updated>2014-02-26T00:00:00+08:00</updated>
+   <content type="html">&lt;h4 id=&quot;git-fetch&quot;&gt;git fetch&lt;/h4&gt; &lt;p&gt;获取远程仓库更新到本地仓库&lt;/p&gt; &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git fetch&lt;/code&gt; 不加任何参数时，如果当前分支没有设置上游(upstream)分支，则默认获取 origin 远程仓库的更新，否则获取跟踪分支对应远程仓库的更新。&lt;/p&gt; &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git fetch --all&lt;/code&gt; 则会获取所有远程仓库的更新。&lt;/p&gt; &lt;h4 id=&quot;git-pull&quot;&gt;git pull&lt;/h4&gt; &lt;p&gt;获取远程仓库更新到本地仓库，并且合并当前所在分支所对应的上游(upstream)分支代码。等价于下面的两步操作：&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git fetch git merge FETCH_HEAD &lt;/code&gt;&lt;/pre&gt; &lt;/div&gt; &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git pull --rebase&lt;/code&gt; 命令也经常会使用到，该命令会在合并操作之前先进行一次衍合(rebase)操作。 假设当前在 master 分支，并且 master 的跟踪分支为 origin/master，则 &lt;code class=&quot;highlighter-rouge&quot;&gt;git pull --rebase&lt;/code&gt; 等价于下面的三步操作：&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git pull git rebase...</content>
+ </entry>
+
+ 
+
+ <entry>
+   <title>Ruby 中的循环控制语句</title>
+   <link href="http://reyesyang.github.io//2014/01/14/loops-control-flow-in-ruby.html"/>
+   <id>http://reyesyang.github.io//2014/01/14/loops-control-flow-in-ruby</id>
+   <updated>2014-01-14T00:00:00+08:00</updated>
+   <content type="html">&lt;p&gt;Ruby 中常用到的循环控制语句包括：next, break, redo, retry 四种，下面就详细看看使用情景：&lt;/p&gt; &lt;h4 id=&quot;next&quot;&gt;next&lt;/h4&gt; &lt;p&gt;退出包含 next 的最内层循环的当前迭代，执行下一迭代&lt;/p&gt; &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1 2 3 4 5 6 7 8&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;i: &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span...</content>
+ </entry>
+
+ 
+
+ <entry>
+   <title>Ruby 中的循环语句</title>
+   <link href="http://reyesyang.github.io//2014/01/13/loops-in-ruby.html"/>
+   <id>http://reyesyang.github.io//2014/01/13/loops-in-ruby</id>
+   <updated>2014-01-13T00:00:00+08:00</updated>
+   <content type="html">&lt;p&gt;由于 Ruby 提供了很多便捷的方法进行对象的循环遍历，如：Array#each, Integer#times, Integer#downto, Integer#upto, Kernel#loop 等，所以日常的开发中很少会需要写循环语句。便整理了相关内容，方便日后查看参考。Ruby 中的循环语句有 for..in, while 和 until 三种，具体使用方法如下：&lt;/p&gt; &lt;h3 id=&quot;for--in&quot;&gt;for .. in&lt;/h3&gt; &lt;p&gt;遍历集合中的所有成员&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for i in 0..3 puts i end &lt;/code&gt;&lt;/pre&gt; &lt;/div&gt; &lt;h3 id=&quot;while&quot;&gt;while&lt;/h3&gt; &lt;p&gt;当条件成立时，执行循环体&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;i = 0 while i &amp;lt;= 3 do # do 可以省略 puts i i +=...</content>
+ </entry>
+
+ 
+
+ <entry>
+   <title>Ruby 中的 Shallow copy 和 Deep copy</title>
+   <link href="http://reyesyang.github.io//2013/10/16/shallow-and-deep-copy-in-ruby.html"/>
+   <id>http://reyesyang.github.io//2013/10/16/shallow-and-deep-copy-in-ruby</id>
+   <updated>2013-10-16T00:00:00+08:00</updated>
+   <content type="html">&lt;h3 id=&quot;shallow-copy--deep-copy&quot;&gt;什么是 Shallow copy 和 Deep copy?&lt;/h3&gt; &lt;ul&gt; &lt;li&gt; &lt;p&gt;Shallow copy&lt;/p&gt; &lt;blockquote&gt; &lt;p&gt;One method of copying an object is the shallow copy. In the process of shallow copying A, B will copy all of A’s field values. If the field value is a memory address it copies the memory address,...</content>
+ </entry>
+
+ 
+
+ <entry>
+   <title>Ruby 中的 dup 和 clone</title>
+   <link href="http://reyesyang.github.io//2013/10/12/dup-and-clone-in-ruby.html"/>
+   <id>http://reyesyang.github.io//2013/10/12/dup-and-clone-in-ruby</id>
+   <updated>2013-10-12T00:00:00+08:00</updated>
+   <content type="html">&lt;p&gt;&lt;del&gt;前段时间项目中有个地方需要在 ActiveRecord 对象被删除后继续使用对象的一些属性进行些操作，很自然想到了在删除前把对象复制一份&lt;/del&gt;(删除说明：AR 对象调用 destroy 方法删除对象时，也只是删除了数据库中的记录，实际上该对象还是存在的，不过已经变为了 frozen 的状态)，然后就接触到了 dup 和 clone 方法，看了文档后感觉二者还是比较容易搞混淆，结合一些搜索到的资料便做个记录。&lt;/p&gt; &lt;p&gt;&lt;strong&gt;dup 的官方文档：&lt;/strong&gt;&lt;/p&gt; &lt;blockquote&gt; &lt;p&gt;&lt;a href=&quot;http://ruby-doc.org/core-2.0.0/Object.html#method-i-dup&quot;&gt;dup&lt;/a&gt;&lt;/p&gt; &lt;p&gt;Produces a shallow copy of obj—the instance variables of obj are copied, but not the objects they reference. dup copies the tainted state of obj. See also the discussion under Object#clone. In general,...</content>
+ </entry>
+
+ 
+
+</feed>

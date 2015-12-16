@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      Ruby 中的 Shallow copy 和 Deep copy
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan-382cd5216f5adfdabb4b8d78b112daab7ca8937bf0cdd94b524a7167de64ece8.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>Ruby 中的 Shallow copy 和 Deep copy</h3>		
+	<time datetime="2013-10-16T00:00:00+08:00" class="by-line">16 Oct 2013</time>
+	<div class="content">
+		<h3 id="shallow-copy--deep-copy">什么是 Shallow copy 和 Deep copy?</h3>
+
+<ul>
+  <li>
+    <p>Shallow copy</p>
+
+    <blockquote>
+      <p>One method of copying an object is the shallow copy. In the process of shallow copying A, B will copy all of A’s field values. If the field value is a memory address it copies the memory address, and if the field value is a primitive type it copies the value of the primitive type.</p>
+
+      <p>The disadvantage is if you modify the memory address that one of B’s fields point to, you are also modifying what A’s fields point to.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Deep copy</p>
+
+    <blockquote>
+      <p>An alternative is a deep copy. Here the data is actually copied over. The result is different from the result a shallow copy gives. The advantage is that A and B do not depend on each other but at the cost of a slower and more expensive copy.</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p>两者最主要区别就是如何处理引用对象，Shallow copy 只复制了对象地址，而 Deep copy 则复制了被引用对象本身。</p>
+
+<h3 id="ruby--shallow-copy">Ruby 中的 Shallow copy</h3>
+
+<p>Ruby 提供的两个复制对象的方法 <code class="highlighter-rouge">Object#dup</code> 和 <code class="highlighter-rouge">Object#clone</code> 都是 Shallow copy。</p>
+
+<h3 id="ruby--deep-copy">Ruby 中的 Deep copy</h3>
+
+<p>Ruby 默认没有提供 Deep copy，通常有三种方法解决这个问题：</p>
+
+<p>方法一，使用序列化和反序列化：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Object</span>
+  <span class="k">def</span> <span class="nf">deep_clone</span>
+    <span class="no">Marshal</span><span class="o">::</span><span class="nb">load</span> <span class="no">Marshal</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>不足之处是 Marshel 不能 dump 下面这些对象：</p>
+
+<ol>
+  <li>anonymous Class/Module.</li>
+  <li>objects which related to its system (ex: Dir, File::Stat, IO, File, Socket and so on)</li>
+  <li>an instance of MatchData, Data, Method, UnboundMethod, Proc, Thread, ThreadGroup, Continuation</li>
+  <li>objects which defines singleton methods</li>
+</ol>
+
+<p>方法二：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Object</span>
+  <span class="k">def</span> <span class="nf">dclone</span>
+    <span class="k">case</span> <span class="nb">self</span>
+      <span class="k">when</span> <span class="no">Fixnum</span><span class="p">,</span><span class="no">Bignum</span><span class="p">,</span><span class="no">Float</span><span class="p">,</span><span class="no">NilClass</span><span class="p">,</span><span class="no">FalseClass</span><span class="p">,</span>
+           <span class="no">TrueClass</span><span class="p">,</span><span class="no">Symbol</span>
+        <span class="n">klone</span> <span class="o">=</span> <span class="nb">self</span>
+      <span class="k">when</span> <span class="no">Hash</span>
+        <span class="n">klone</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">clone</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">each</span><span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="o">|</span> <span class="n">klone</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="nf">dclone</span><span class="p">}</span>
+      <span class="k">when</span> <span class="no">Array</span>
+        <span class="n">klone</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">clone</span>
+        <span class="n">klone</span><span class="p">.</span><span class="nf">clear</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">each</span><span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">klone</span> <span class="o">&lt;&lt;</span> <span class="n">v</span><span class="p">.</span><span class="nf">dclone</span><span class="p">}</span>
+      <span class="k">else</span>
+        <span class="n">klone</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">clone</span>
+    <span class="k">end</span>
+    <span class="n">klone</span><span class="p">.</span><span class="nf">instance_variables</span><span class="p">.</span><span class="nf">each</span> <span class="p">{</span><span class="o">|</span><span class="n">v</span><span class="o">|</span>
+      <span class="n">klone</span><span class="p">.</span><span class="nf">instance_variable_set</span><span class="p">(</span><span class="n">v</span><span class="p">,</span>
+        <span class="n">klone</span><span class="p">.</span><span class="nf">instance_variable_get</span><span class="p">(</span><span class="n">v</span><span class="p">).</span><span class="nf">dclone</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">klone</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>方法三：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Object</span>
+  <span class="k">def</span> <span class="nf">deep_clone</span>
+    <span class="n">_deep_clone</span><span class="p">({})</span>
+  <span class="k">end</span>
+
+  <span class="kp">protected</span>
+  <span class="k">def</span> <span class="nf">_deep_clone</span><span class="p">(</span><span class="n">cloning_map</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cloning_map</span><span class="p">[</span><span class="nb">self</span><span class="p">]</span> <span class="k">if</span> <span class="n">cloning_map</span><span class="p">.</span><span class="nf">key?</span> <span class="nb">self</span>
+    <span class="n">cloning_obj</span> <span class="o">=</span> <span class="nb">clone</span>
+    <span class="n">cloning_map</span><span class="p">[</span><span class="nb">self</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloning_obj</span>
+    <span class="n">cloning_obj</span><span class="p">.</span><span class="nf">instance_variables</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">var</span><span class="o">|</span>
+      <span class="n">val</span> <span class="o">=</span> <span class="n">cloning_obj</span><span class="p">.</span><span class="nf">instance_variable_get</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+      <span class="k">begin</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">.</span><span class="nf">_deep_clone</span><span class="p">(</span><span class="n">cloning_map</span><span class="p">)</span>
+      <span class="k">rescue</span> <span class="no">TypeError</span>
+        <span class="k">next</span>
+      <span class="k">end</span>
+      <span class="n">cloning_obj</span><span class="p">.</span><span class="nf">instance_variable_set</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">cloning_map</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Array</span>
+  <span class="kp">protected</span>
+  <span class="k">def</span> <span class="nf">_deep_clone</span><span class="p">(</span><span class="n">cloning_map</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cloning_map</span><span class="p">[</span><span class="nb">self</span><span class="p">]</span> <span class="k">if</span> <span class="n">cloning_map</span><span class="p">.</span><span class="nf">key?</span> <span class="nb">self</span>
+    <span class="n">cloning_obj</span> <span class="o">=</span> <span class="k">super</span>
+    <span class="n">cloning_map</span><span class="p">[</span><span class="nb">self</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloning_obj</span>
+    <span class="n">cloning_obj</span><span class="p">.</span><span class="nf">map!</span> <span class="k">do</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span>
+      <span class="k">begin</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">.</span><span class="nf">_deep_clone</span><span class="p">(</span><span class="n">cloning_map</span><span class="p">)</span>
+      <span class="k">rescue</span> <span class="no">TypeError</span>
+        <span class="c1">#</span>
+      <span class="k">end</span>
+      <span class="n">val</span>
+    <span class="k">end</span>
+    <span class="n">cloning_map</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Hash</span>
+  <span class="kp">protected</span>
+  <span class="k">def</span> <span class="nf">_deep_clone</span><span class="p">(</span><span class="n">cloning_map</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cloning_map</span><span class="p">[</span><span class="nb">self</span><span class="p">]</span> <span class="k">if</span> <span class="n">cloning_map</span><span class="p">.</span><span class="nf">key?</span> <span class="nb">self</span>
+    <span class="n">cloning_obj</span> <span class="o">=</span> <span class="k">super</span>
+    <span class="n">cloning_map</span><span class="p">[</span><span class="nb">self</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloning_obj</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="n">cloning_obj</span><span class="p">.</span><span class="nf">to_a</span>
+    <span class="n">cloning_obj</span><span class="p">.</span><span class="nf">clear</span>
+    <span class="n">pairs</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">pair</span><span class="o">|</span>
+      <span class="n">pair</span><span class="p">.</span><span class="nf">map!</span> <span class="k">do</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span>
+        <span class="k">begin</span>
+          <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">.</span><span class="nf">_deep_clone</span><span class="p">(</span><span class="n">cloning_map</span><span class="p">)</span>
+        <span class="k">rescue</span> <span class="no">TypeError</span>
+          <span class="c1">#</span>
+        <span class="k">end</span>
+        <span class="n">val</span>
+      <span class="k">end</span>
+      <span class="n">cloning_obj</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span class="n">cloning_map</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>参考：</p>
+
+<ul>
+  <li><a href="http://www.iteye.com/topic/407957">只想与你深发展..</a></li>
+  <li><a href="http://en.wikipedia.org/wiki/Object_copy">Object copy</a></li>
+  <li><a href="http://stackoverflow.com/questions/184710/what-is-the-difference-between-a-deep-copy-and-a-shallow-copy">What is the difference between a deep copy and a shallow copy?</a></li>
+  <li><a href="http://www.artima.com/forums/flat.jsp?forum=123&amp;thread=40913">Deep Cloning</a></li>
+  <li><a href="http://d.hatena.ne.jp/pegacorn/20070417/1176817721">深いコピーの作成(2) - pegacornの日記</a></li>
+</ul>
+
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+
+  </body>
+</html>

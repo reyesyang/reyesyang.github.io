@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      git fetch, pull, checkout 和 push 简介
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan-382cd5216f5adfdabb4b8d78b112daab7ca8937bf0cdd94b524a7167de64ece8.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>git fetch, pull, checkout 和 push 简介</h3>		
+	<time datetime="2014-02-26T00:00:00+08:00" class="by-line">26 Feb 2014</time>
+	<div class="content">
+		<h4 id="git-fetch">git fetch</h4>
+<p>获取远程仓库更新到本地仓库</p>
+
+<p><code class="highlighter-rouge">git fetch</code> 不加任何参数时，如果当前分支没有设置上游(upstream)分支，则默认获取 origin 远程仓库的更新，否则获取跟踪分支对应远程仓库的更新。</p>
+
+<p><code class="highlighter-rouge">git fetch --all</code> 则会获取所有远程仓库的更新。</p>
+
+<h4 id="git-pull">git pull</h4>
+<p>获取远程仓库更新到本地仓库，并且合并当前所在分支所对应的上游(upstream)分支代码。等价于下面的两步操作：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git fetch
+git merge FETCH_HEAD
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">git pull --rebase</code> 命令也经常会使用到，该命令会在合并操作之前先进行一次衍合(rebase)操作。
+假设当前在 master 分支，并且 master 的跟踪分支为 origin/master，则 <code class="highlighter-rouge">git pull --rebase</code> 等价于下面的三步操作：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git pull
+git rebase origin/master
+git merge origin/master
+</code></pre>
+</div>
+
+<p>由于进行了衍合(rebase)操作，会改变历史提交记录，所以在公共分支上使用时一定要慎重。</p>
+
+<h4 id="git-checkout">git checkout</h4>
+<p>该命令有三种作用：</p>
+
+<ol>
+  <li>切换本地分支</li>
+  <li>
+    <p>如果指定的跟地分支不存在，但是本地仓库存在同名的远程分支，则会创建同名的本地分支作为跟踪分支</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>git checkout branch_name
+# 等价于
+git checkout -b branch_name --track remote/branch_name
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>取消当前工作目录(working directory)的修改</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>git checkout filename
+# 等价于
+git checkout -- filename
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<p>需要注意的是最后一种情况仅当没有和 filename 同名的分支名时才生效。</p>
+
+<h4 id="git-push">git push</h4>
+<p>推送本地分支代码到远程仓库</p>
+
+<p>在本地分支直接运行 <code class="highlighter-rouge">git push</code> 经常会遇到的一种错误是：</p>
+
+<blockquote>
+  <p>fatal: The current branch branch_name has no upstream branch.</p>
+</blockquote>
+
+<p>这是因为当前分支没有设置上游(upstream)分支，git 不能确定当前分支应该推送到远程仓库的哪个分支导致的。解决方法：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git branch --set-upstream remote/branch_name
+</code></pre>
+</div>
+
+<p>上游(upstream)分支设置完成后，运行 <code class="highlighter-rouge">git push</code> 则等价于：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git push remote branch_name:branch_name
+</code></pre>
+</div>
+
+<p>也可以使用下面语句：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git push remote branch_name:other_branch_name
+</code></pre>
+</div>
+
+<p>来将当前本地分支代码推送到其他远程分支上去。</p>
+
+<h4 id="section">参考</h4>
+
+<ol>
+  <li><a href="http://git-scm.com/docs/git-fetch">git-fetch(1) Manual Page</a></li>
+  <li><a href="http://git-scm.com/docs/git-pull">git-pull(1) Manual Page</a></li>
+  <li><a href="http://git-scm.com/docs/git-checkout">git-checkout(1) Manual Page</a></li>
+  <li><a href="http://git-scm.com/docs/git-push">git-push(1) Manual Page</a></li>
+</ol>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+
+  </body>
+</html>

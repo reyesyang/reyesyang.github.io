@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      Ruby 中的 dup 和 clone
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan-382cd5216f5adfdabb4b8d78b112daab7ca8937bf0cdd94b524a7167de64ece8.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>Ruby 中的 dup 和 clone</h3>		
+	<time datetime="2013-10-12T00:00:00+08:00" class="by-line">12 Oct 2013</time>
+	<div class="content">
+		<p><del>前段时间项目中有个地方需要在 ActiveRecord 对象被删除后继续使用对象的一些属性进行些操作，很自然想到了在删除前把对象复制一份</del>(删除说明：AR 对象调用 destroy 方法删除对象时，也只是删除了数据库中的记录，实际上该对象还是存在的，不过已经变为了 frozen 的状态)，然后就接触到了 dup 和 clone 方法，看了文档后感觉二者还是比较容易搞混淆，结合一些搜索到的资料便做个记录。</p>
+
+<p><strong>dup 的官方文档：</strong></p>
+
+<blockquote>
+  <p><a href="http://ruby-doc.org/core-2.0.0/Object.html#method-i-dup">dup</a></p>
+
+  <p>Produces a shallow copy of obj—the instance variables of obj are copied, but not the objects they reference. dup copies the tainted state of obj. See also the discussion under Object#clone. In general, clone and dup may have different semantics in descendant classes. While clone is used to duplicate an object, including its internal state, dup typically uses the class of the descendant object to create the new instance.</p>
+
+  <p>This method may have class-specific behavior. If so, that behavior will be documented under the #initialize_copy method of the class.</p>
+</blockquote>
+
+<p>大意是 dup 会进行浅拷贝–只拷贝对象包含的实例变量，而不是实例变量所引用的对象本身。而且 dup 会拷贝对象的 tainted 状态。而特定类的 dup 方法可能会有额外的一些行为，具体参考该类对于 initialize_copy 方法的解释。</p>
+
+<p><strong>clone的官方文档：</strong></p>
+
+<blockquote>
+  <p><a href="http://ruby-doc.org/core-2.0.0/Object.html#method-i-clone">clone</a></p>
+
+  <p>Produces a shallow copy of obj—the instance variables of obj are copied, but not the objects they reference. Copies the frozen and tainted state of obj. See also the discussion under Object#dup.</p>
+
+  <p>This method may have class-specific behavior. If so, that behavior will be documented under the #initialize_copy method of the class.</p>
+</blockquote>
+
+<p>大意是 clone 会进行浅拷贝–只拷贝对象包含的实例变量，而不是实例变量所引用的对象本身。而且 clone 会拷贝对象的 tainted 和 frozen 状态。而特定类的 clone 方法可能会有额外的一些行为，具体参考该类对于 initialize_copy 方法的解释。</p>
+
+<p><strong>对两者的简单总结</strong></p>
+
+<p>相同点：</p>
+
+<ol>
+  <li>
+    <p>浅拷贝(shallow copy)：只拷贝对象包含的实例变量，而不是实例变量所引用的对象本身</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>class ProgramLanguage
+  attr_accessor :name
+
+  def initialize(name)
+    @name = name
+  end
+end
+
+ruby = ProgramLanguage.new "ruby"
+ruby.name.object_id == ruby.dup.name.object_id  #=&gt; true
+ruby.name.object_id == ruby.clone.name.object_id  #=&gt; true
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>拷贝对象的 tainted 状态</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>ruby.taint
+ruby.tainted?  #=&gt; true
+ruby.dup.tainted?  #=&gt; true
+ruby.clone.tainted?  #=&gt; true
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<p>不同点：</p>
+
+<ol>
+  <li>
+    <p>clone 会拷贝对象的 frozen 状态</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>ruby.freeze
+ruby.frozen?  #=&gt; true
+ruby.dup.frozen?  #=&gt; false
+ruby.clone.frozen?  #=&gt; true
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>clone 会拷贝对象的单例方法</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>ruby = ProgramLanguauge.new "ruby"
+
+def ruby.creator
+  "Matz"
+end
+
+ruby.creator  #=&gt; Matz
+ruby.dup.creator  #=&gt; undefined method `creator' for #&lt;ProgramLanguage @name="ruby"&gt;
+ruby.clone.creator  #=&gt; Matz
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<p>Matz 在对于 clone 和 dup 的描述如下：</p>
+
+<blockquote>
+  <p>‘clone’ copies everything; internal state, singleton methods, etc.
+‘dup’ copies object contents only (plus taintness status).</p>
+</blockquote>
+
+<!-- Rails 中 dup 的变化 -->
+
+<p>参考：</p>
+
+<ol>
+  <li><a href="http://www.iteye.com/topic/407957">只想与你深发展..</a></li>
+  <li><a href="http://www.jonathanleighton.com/articles/2011/initialize_clone-initialize_dup-and-initialize_copy-in-ruby/">initialize_clone, initialize_dup and initialize_copy in Ruby</a></li>
+  <li><a href="http://computer-programming-forum.com/39-ruby/20826f090dd40ca3.htm">Ruby-talk about dup vs clone from Matz</a></li>
+</ol>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+
+  </body>
+</html>
