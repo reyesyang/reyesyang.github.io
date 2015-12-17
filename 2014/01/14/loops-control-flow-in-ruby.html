@@ -12,7 +12,7 @@
     
   </title>
 
-  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+  <link type="text/css" rel="stylesheet" href="/assets/application-d82a0ba2fed847d2aa640f7a34990cd90536151cd0db6748ead78b4eb64c46b1.css">
 
 	<!-- RSS -->
 	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
@@ -61,76 +61,60 @@
 	<h3>Ruby 中的循环控制语句</h3>		
 	<time datetime="2014-01-14T00:00:00+08:00" class="by-line">14 Jan 2014</time>
 	<div class="content">
-		<p>Ruby 中常用到的循环控制语句包括：next, break, redo, retry 四种，下面就详细看看使用情景：</p>
+		<p>Ruby 中常用到的循环控制语句包括：next、break、redo、retry 四种，下面就详细看看使用情景：</p>
 
 <h4 id="next">next</h4>
 <p>退出包含 next 的最内层循环的当前迭代，执行下一迭代</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8</pre></td><td class="code"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
   <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
 
   <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
     <span class="k">next</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
   <span class="k">end</span>
-<span class="k">end</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>输出结果：</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+<div class="highlighter-rouge"><pre class="highlight"><code>i: 0
 j: 2
 j: 4
 i: 1
 j: 2
-j: 4</code></pre></figure>
+j: 4
+</code></pre>
+</div>
 
 <h4 id="break">break</h4>
 <p>退出包含 break 的最内层循环</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8</pre></td><td class="code"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
   <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
 
   <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
     <span class="k">break</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
   <span class="k">end</span>
-<span class="k">end</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>输出结果：</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+<div class="highlighter-rouge"><pre class="highlight"><code>i: 0
 j: 2
 i: 1
-j: 2</code></pre></figure>
+j: 2
+</code></pre>
+</div>
 
 <h4 id="redo">redo</h4>
 <p>重新执行包含 redo 的最内层循环的当前迭代</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9</pre></td><td class="code"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
   <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
 
   <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">2</span><span class="p">.</span><span class="nf">.</span><span class="mi">4</span>
@@ -138,31 +122,24 @@ j: 2</code></pre></figure>
     <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">redo</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
   <span class="k">end</span>
-<span class="k">end</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>输出结果：</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+<div class="highlighter-rouge"><pre class="highlight"><code>i: 0
 j: 2
 j: 3
 j: 3
-...  <span class="c"># 无限输出 j: # retry (Ruby 1.9 后移除)**</span></code></pre></figure>
+...  <span class="c"># 无限输出 j: # retry (Ruby 1.9 后移除)**</span>
+</code></pre>
+</div>
 
 <h4 id="retry-ruby-19-">retry (Ruby 1.9 后移除)</h4>
 <p>重新执行包含 retry 的最内层循环</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11</pre></td><td class="code"><pre><span class="c1"># 请使用 Ruby1.9 之前的版本运行</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1"># 请使用 Ruby1.9 之前的版本运行</span>
 <span class="c1"># 否则会抛异常：SyntaxError: (eval):8: Invalid retry</span>
 <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="p">.</span><span class="nf">.</span><span class="mi">1</span>
   <span class="nb">puts</span> <span class="s2">"i: </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
@@ -172,19 +149,22 @@ j: 3
     <span class="nb">puts</span> <span class="s2">"j: </span><span class="si">#{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">retry</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">3</span>
   <span class="k">end</span>
-<span class="k">end</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>输出结果：</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">i: 0
+<div class="highlighter-rouge"><pre class="highlight"><code>i: 0
 j: 2
 j: 3
 j: 2
 j: 3
-...  <span class="c"># 无限交替输出 j: 2, j: 3</span></code></pre></figure>
+...  <span class="c"># 无限交替输出 j: 2, j: 3</span>
+</code></pre>
+</div>
 
-<p><strong>参考：</strong></p>
+<h4 id="section">参考</h4>
 
 <ol>
   <li><a href="http://www.tutorialspoint.com/ruby/ruby_loops.htm">Ruby Loops - while, for, until, break, redo and retry</a></li>
@@ -205,7 +185,7 @@ j: 3
 
     </div>
 
-    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+    <script type="text/javascript" src="/assets/application-6d782da41be9a737832bc368ebde7f75404fa2d08e9c0886025a909fd8380737.js"></script>
 
   </body>
 </html>

@@ -12,7 +12,7 @@
     
   </title>
 
-  <link type="text/css" rel="stylesheet" href="/assets/application-db4111c917ad789b58206360d4f10f736d37cc6de326b63e248ee4dc30e066df.css">
+  <link type="text/css" rel="stylesheet" href="/assets/application-d82a0ba2fed847d2aa640f7a34990cd90536151cd0db6748ead78b4eb64c46b1.css">
 
 	<!-- RSS -->
 	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
@@ -61,44 +61,43 @@
 	<h3>Ruby 中的 Shallow copy 和 Deep copy</h3>		
 	<time datetime="2013-10-16T00:00:00+08:00" class="by-line">16 Oct 2013</time>
 	<div class="content">
-		<h3 id="shallow-copy--deep-copy">什么是 Shallow copy 和 Deep copy?</h3>
+		<h4 id="shallow-copy">什么是 Shallow copy？</h4>
 
-<ul>
-  <li>
-    <p>Shallow copy</p>
+<p>引用 Wikipedia 中的定义如下：</p>
 
-    <blockquote>
-      <p>One method of copying an object is the shallow copy. In the process of shallow copying A, B will copy all of A’s field values. If the field value is a memory address it copies the memory address, and if the field value is a primitive type it copies the value of the primitive type.</p>
+<blockquote>
+  <p>One method of copying an object is the shallow copy. In the process of shallow copying A, B will copy all of A’s field values. If the field value is a memory address it copies the memory address, and if the field value is a primitive type it copies the value of the primitive type.</p>
 
-      <p>The disadvantage is if you modify the memory address that one of B’s fields point to, you are also modifying what A’s fields point to.</p>
-    </blockquote>
-  </li>
-  <li>
-    <p>Deep copy</p>
+  <p>The disadvantage is if you modify the memory address that one of B’s fields point to, you are also modifying what A’s fields point to.</p>
+</blockquote>
 
-    <blockquote>
-      <p>An alternative is a deep copy. Here the data is actually copied over. The result is different from the result a shallow copy gives. The advantage is that A and B do not depend on each other but at the cost of a slower and more expensive copy.</p>
-    </blockquote>
-  </li>
-</ul>
+<h4 id="deep-copy">什么是 Deep copy？</h4>
+
+<p>引用 Wikipedia 中的定义如下：</p>
+
+<blockquote>
+  <p>An alternative is a deep copy. Here the data is actually copied over. The result is different from the result a shallow copy gives. The advantage is that A and B do not depend on each other but at the cost of a slower and more expensive copy.</p>
+</blockquote>
 
 <p>两者最主要区别就是如何处理引用对象，Shallow copy 只复制了对象地址，而 Deep copy 则复制了被引用对象本身。</p>
 
-<h3 id="ruby--shallow-copy">Ruby 中的 Shallow copy</h3>
+<h4 id="ruby--shallow-copy">Ruby 中的 Shallow copy</h4>
 
 <p>Ruby 提供的两个复制对象的方法 <code class="highlighter-rouge">Object#dup</code> 和 <code class="highlighter-rouge">Object#clone</code> 都是 Shallow copy。</p>
 
-<h3 id="ruby--deep-copy">Ruby 中的 Deep copy</h3>
+<h4 id="ruby--deep-copy">Ruby 中的 Deep copy</h4>
 
 <p>Ruby 默认没有提供 Deep copy，通常有三种方法解决这个问题：</p>
 
 <p>方法一，使用序列化和反序列化：</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Object</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Object</span>
   <span class="k">def</span> <span class="nf">deep_clone</span>
     <span class="no">Marshal</span><span class="o">::</span><span class="nb">load</span> <span class="no">Marshal</span><span class="p">.</span><span class="nf">dump</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>不足之处是 Marshel 不能 dump 下面这些对象：</p>
 
@@ -111,7 +110,7 @@
 
 <p>方法二：</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Object</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Object</span>
   <span class="k">def</span> <span class="nf">dclone</span>
     <span class="k">case</span> <span class="nb">self</span>
       <span class="k">when</span> <span class="no">Fixnum</span><span class="p">,</span><span class="no">Bignum</span><span class="p">,</span><span class="no">Float</span><span class="p">,</span><span class="no">NilClass</span><span class="p">,</span><span class="no">FalseClass</span><span class="p">,</span>
@@ -133,11 +132,13 @@
     <span class="p">}</span>
     <span class="n">klone</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>方法三：</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Object</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Object</span>
   <span class="k">def</span> <span class="nf">deep_clone</span>
     <span class="n">_deep_clone</span><span class="p">({})</span>
   <span class="k">end</span>
@@ -199,7 +200,9 @@
     <span class="k">end</span>
     <span class="n">cloning_map</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></figure>
+<span class="k">end</span>
+</code></pre>
+</div>
 
 <p>参考：</p>
 
@@ -226,7 +229,7 @@
 
     </div>
 
-    <script type="text/javascript" src="/assets/application-1f7a506390030485a31bb735c9139161016eee970398caf7196d0ed286396555.js"></script>
+    <script type="text/javascript" src="/assets/application-6d782da41be9a737832bc368ebde7f75404fa2d08e9c0886025a909fd8380737.js"></script>
 
   </body>
 </html>
