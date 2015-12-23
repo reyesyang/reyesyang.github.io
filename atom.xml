@@ -4,7 +4,7 @@
  <title>Reyes Yang 的个人博客</title>
  <link href="http://reyesyang.github.io//atom.xml" rel="self"/>
  <id>http://reyesyang.github.io/</id>
- <updated>2015-12-17T15:48:07+08:00</updated>
+ <updated>2015-12-23T23:30:36+08:00</updated>
  <author>
    <name>Reyes Yang</name>
    <uri>http://reyesyang.info</uri>
@@ -14,7 +14,17 @@
  
 
  <entry>
-   <title>git fetch, pull, checkout 和 push 简介</title>
+   <title>理解 Ruby 中的作用域（Scope）</title>
+   <link href="http://reyesyang.github.io//2015/12/13/understanding-scope-in-ruby.html"/>
+   <id>http://reyesyang.github.io//2015/12/13/understanding-scope-in-ruby</id>
+   <updated>2015-12-13T00:00:00+08:00</updated>
+   <content type="html">&lt;p&gt;本文翻译自 Darko Gjorgjievski 发表在 sitepoint 上的文章 &lt;a href=&quot;http://www.sitepoint.com/understanding-scope-in-ruby/&quot;&gt;Understanding Scope in Ruby&lt;/a&gt;&lt;/p&gt; &lt;p&gt;作用域（Scope）是非常必要去理解的概念，而且不仅仅是在 Ruby 中，在其他编程语言中也一样。回想起我以前刚开始使用 Ruby 的日子，编程中遇到的大半错误都是由于我没有充分理解这个概念。比如为定义变量，变量的错误赋值等等。一旦你很好的理解了作用与，就不会再遇到这些让人头痛的问题啦！希望通过这篇文章能帮助你避免很多我翻过的错误。&lt;/p&gt; &lt;h4 id=&quot;section&quot;&gt;作用域究竟是什么？&lt;/h4&gt; &lt;p&gt;当人们提起作用域的时候，通常会想到两个词语：&lt;strong&gt;变量&lt;/strong&gt; 和 &lt;strong&gt;可见性&lt;/strong&gt;。这很直观：作用域就是在哪些地方可以访问哪些东西。就是在具体的某一时刻，什么东西（变量，常量，方法）是你可以使用的。如果你理解了作用域，你就可以指出 Ruby 程序中任何一行代码的上下文中，哪些变量是可以使用的，更重要的是，哪些不能使用。&lt;/p&gt; &lt;p&gt;那么首先让我们考虑下限制变量可见性的原因是什么？为什么不让所有变量在任何时候都能使用？那样的话编程不就更方便一些，不是吗？的确没有这么简单……&lt;/p&gt; &lt;p&gt;程序员们有很多事情存在争议（使用函数式还是面向对象的方式，使用不同的变量命名模板等等），但是作用域并不在其中。尤其当程序员随着编程阅历的增加，他们更加支持作用域的存在，为什么呢？&lt;/p&gt; &lt;p&gt;因为随着越来越多的编程阅历的增加，你越有机会体会到让所有的变量任何时候都能访问到是多么可怕的事情。&lt;a href=&quot;http://programmers.stackexchange.com/questions/148108/why-is-global-state-so-evil&quot;&gt;全局状态(Global State)&lt;/a&gt;让我们的程序运行非常难以预测。当所有人都能修改它时，我们很难追踪到始作俑者。谁修改了这个变量？谁读取了它？想想如果我们在面对成千上万行代码的时候都会面临这样的问题！&lt;/p&gt; &lt;p&gt;而且还会引入命名问题。假设你有一庞大的程序，以免命名冲突，你不得不给每一个变量一个唯一的名字。想想，这就需要你跟踪成千上万的变量名。&lt;/p&gt; &lt;p&gt;作用域类似于计算机科学的另一个原则：&lt;a href=&quot;http://etutorials.org/Server+Administration/securing+windows+server+2003/Chapter+2.+Basics+of+Computer+Security/2.3+POLA+The+Principle+of+Least+Access/&quot;&gt;最小可访问原则（The Principle of Least Access）&lt;/a&gt;。想象一下如果银行中的每个员工（出纳，会计）都能（读取和修改）每个客户，财务等等的记录。突然，有人修改了客户的存款余额。是出纳还是会计做的？还是有可能他们都做过？你明白我要表达的意思了吧。&lt;/p&gt; &lt;h4 id=&quot;ruby-&quot;&gt;Ruby 变量作用域：快速参考&lt;/h4&gt; &lt;p&gt;你可能已经了解了，Ruby 在不同的作用域中定义了变量。我知道很多教程都已经简要的描述了它们（变量的类型），但是它们却恰恰没有提到它们的作用域是什么。这里我将详细说明下：&lt;/p&gt; &lt;ul&gt; &lt;li&gt;类变量（@@a_variable）：在类和所有子类的定义中有效，其余地方均无效。&lt;/li&gt; &lt;li&gt;实例变量（@a_variable）：仅在某个特定的对象中有效，贯穿一个类实例中的所有方法。但是在类定义中直接使用无效。&lt;/li&gt; &lt;li&gt;全局变量（$a_variable）：在 Ruby 脚本的任何地方都有效。&lt;/li&gt; &lt;li&gt;局部变量（a_variable）：取决于作用域。这是我们最常打交道的，也是最容易出错的，因为它依赖于很多因素。&lt;/li&gt; &lt;/ul&gt; &lt;p&gt;通过&lt;a href=&quot;http://natashatherobot.com/ruby-variable-scope/&quot;&gt;一个插图&lt;/a&gt;来直观的展示下这四种不同作用域的可见性。你将对他们的范围和有效性有一个大概的了解：&lt;/p&gt;...</content>
+ </entry>
+
+ 
+
+ <entry>
+   <title>Git fetch, pull, checkout 和 push 简介</title>
    <link href="http://reyesyang.github.io//2014/02/26/git-fetch-pull-checkout-push-introduction.html"/>
    <id>http://reyesyang.github.io//2014/02/26/git-fetch-pull-checkout-push-introduction</id>
    <updated>2014-02-26T00:00:00+08:00</updated>
