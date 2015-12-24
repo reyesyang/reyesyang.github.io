@@ -4,12 +4,22 @@
  <title>Reyes Yang 的个人博客</title>
  <link href="http://reyesyang.github.io//atom.xml" rel="self"/>
  <id>http://reyesyang.github.io/</id>
- <updated>2015-12-24T21:55:10+08:00</updated>
+ <updated>2015-12-24T23:05:51+08:00</updated>
  <author>
    <name>Reyes Yang</name>
    <uri>http://reyesyang.info</uri>
    <email>reyes.yang@gmail.com</email>
  </author>
+
+ 
+
+ <entry>
+   <title>[翻译] 理解 Ruby 中的改良和词法作用域</title>
+   <link href="http://reyesyang.github.io//2015/12/24/understanding-ruby-refinements-and-lexical-scope.html"/>
+   <id>http://reyesyang.github.io//2015/12/24/understanding-ruby-refinements-and-lexical-scope</id>
+   <updated>2015-12-24T00:00:00+08:00</updated>
+   <content type="html">&lt;p&gt;本文翻译自 Starr Horne 发表在 Honeybadger 上的文章：&lt;a href=&quot;http://blog.honeybadger.io/understanding-ruby-refinements-and-lexical-scope/&quot;&gt;Understanding Ruby Refinements and Lexical Scope&lt;/a&gt;&lt;/p&gt; &lt;p&gt;如果你之前还没有使用过改良，这可能对你是个惊喜。你可能已经听说过 Ruby 引入改良（Refinements）是为了替换猴子补丁（Monkey Patch）。所以你可能会期待这你能够实现一个类似 ActiveSupport 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;hours&lt;/code&gt; 方法：&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;TimeExtension&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;refine&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Fixnum&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;hours&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span...</content>
+ </entry>
 
  
 

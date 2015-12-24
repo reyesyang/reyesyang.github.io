@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      [翻译] 理解 Ruby 中的改良和词法作用域
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>[翻译] 理解 Ruby 中的改良和词法作用域</h3>		
+	<time datetime="2015-12-24T00:00:00+08:00" class="by-line">24 Dec 2015</time>
+	<div class="content">
+		<p>本文翻译自 Starr Horne 发表在 Honeybadger 上的文章：<a href="http://blog.honeybadger.io/understanding-ruby-refinements-and-lexical-scope/">Understanding Ruby Refinements and Lexical Scope</a></p>
+
+<p>如果你之前还没有使用过改良，这可能对你是个惊喜。你可能已经听说过 Ruby 引入改良（Refinements）是为了替换猴子补丁（Monkey Patch）。所以你可能会期待这你能够实现一个类似 ActiveSupport 中的 <code class="highlighter-rouge">hours</code> 方法：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">module</span> <span class="nn">TimeExtension</span>
+  <span class="n">refine</span> <span class="no">Fixnum</span> <span class="k">do</span>
+    <span class="k">def</span> <span class="nf">hours</span>
+      <span class="nb">self</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">MyFramework</span>
+  <span class="n">using</span> <span class="no">TimeExtension</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">MyApp</span> <span class="o">&lt;</span> <span class="no">MyFramework</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="mi">1</span><span class="p">.</span><span class="nf">hours</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">MyApp</span><span class="p">.</span><span class="nf">new</span><span class="p">.</span><span class="nf">index</span>  <span class="c1"># undefined method `hours` for 1:Fixnum (NoMethodError)</span>
+</code></pre>
+</div>
+
+<p>如果你运行上面的代码，就会发现它没法工作。所以发生了什么？</p>
+
+<p>像其他伟大的想法一样，改良的原始概念不得不经过一些优化才能使它在残酷的现实中工作。</p>
+
+<p>我们看到上面代码令人吃惊的表现就是由于这些优化之一导致的。尤其那条规则说改良是词法范围的。</p>
+
+<h4 id="section">什么是词法范围？</h4>
+
+<p>当我们说什么事情是词法的，意味着不得不和文本打交道 —— 屏幕中的代码而不是代码的含义。</p>
+
+<p>如果有两行代码是词法范围的，简而言之就是他们出现在同一个代码块中 —— 而不用在乎代码块会如何计算。</p>
+
+<p>比起上面说这么多，看例子更简单一些：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">B</span>
+  <span class="c1"># x and y share the same lexical scope</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">B</span>
+  <span class="c1"># z has a different lexical scooe from x and y, even though it's in the same class.</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<h4 id="section-1">改良是词法范围的</h4>
+
+<p>当我们通过 <code class="highlighter-rouge">using</code> 关键字使用改良时，改良仅在词法作用域中可见。</p>
+
+<p>下面的例子能表达出我的意思：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">module</span> <span class="nn">TimeExtension</span>
+  <span class="n">refine</span> <span class="no">Fixnum</span> <span class="k">do</span>
+    <span class="k">def</span> <span class="nf">hours</span>
+      <span class="nb">self</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">MyApp</span>
+  <span class="n">using</span> <span class="no">TimeExtension</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="mi">1</span><span class="p">.</span><span class="nf">hours</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">MyApp</span>
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="mi">2</span><span class="p">.</span><span class="nf">hours</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">MyApp</span><span class="p">.</span><span class="nf">new</span><span class="p">.</span><span class="nf">show</span>  <span class="c1"># undefined method `hours` for 1:Fixnum (NoMethodError)</span>
+</code></pre>
+</div>
+
+<p>即使 <code class="highlighter-rouge">index</code> 和 <code class="highlighter-rouge">show</code> 方法属于同一个类，但是只有 <code class="highlighter-rouge">index</code> 方法可以访问改良，因为它只通过 <code class="highlighter-rouge">using</code> 语句来共享词法作用域。</p>
+
+<p>这看起来可能有些奇怪，因为几乎所有的东西在 Ruby 中都是动态范围的。当你给类添加了一个方法时，即使你推出了类定义，这个方法还保存在那里。但是改良并不是这样工作的。</p>
+
+<p>这是若干个首次不太明显的影响。</p>
+
+<h4 id="section-2">你不能动态调用改良后的方法</h4>
+
+<p>因为 <code class="highlighter-rouge">send</code> 方法没有和包含 <code class="highlighter-rouge">using</code> 语句的代码定义在同一个代码块中，所以看不到这个改良后的方法。</p>
+
+<p>所以下面这些并不工作：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyApp</span>
+  <span class="n">using</span> <span class="no">TimeExtension</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="mi">1</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="ss">:hours</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<h4 id="section-3">你不能查询改良后的方法是否存在</h4>
+
+<p><code class="highlighter-rouge">respond_to?</code> 方法也没有在同一个代码块中。所以因为同样的原因 <code class="highlighter-rouge">send</code> 方法也不工作。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyApp</span>
+  <span class="n">using</span> <span class="no">TimeExtension</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="mi">1</span><span class="p">.</span><span class="nf">respond_to?</span><span class="p">(</span><span class="ss">:hours</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<h4 id="section-4">总结</h4>
+
+<p>我希望通过这篇文章能扫除一些我发现其他人在使用改良时遇到的混乱。它们无疑是 Ruby 中的一个潜在的很有用的功能，但是如果你从没有使用它们，它们可能会让你感到有些棘手。</p>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application.js"></script>
+
+  </body>
+</html>
