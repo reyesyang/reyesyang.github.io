@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      [翻译] Ruby 元编程：都是 Self 的事
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>[翻译] Ruby 元编程：都是 Self 的事</h3>		
+	<time datetime="2015-12-24T00:00:00+08:00" class="by-line">24 Dec 2015</time>
+	<div class="content">
+		<p>本文翻译自 Yehuda Katz 的博客文章 <a href="http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/">Metaprogramming in Ruby: It’s All About the Self</a></p>
+
+<p>在我写完上篇<a href="http://yehudakatz.com/2009/11/12/better-ruby-idioms/">关于 Rails 插件的惯用语法的文章</a>后，我意识到 Ruby 元编程，就核心而言，其实非常简单。</p>
+
+<p>归根结底是因为所有的 Ruby 代码都是可执行代码 —— 不需要额外的编译或者运行时阶段。在 Ruby 中，每一行代码都是针对一个特定的 <code class="highlighter-rouge">self</code> 执行的。考虑下面五段代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Person</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">species</span>
+    <span class="s2">"Homo Sapien"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Person</span>
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="k">def</span> <span class="nf">species</span>
+      <span class="s2">"Homo Sapien"</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">Person</span>
+  <span class="k">def</span> <span class="nf">species</span>
+    <span class="s2">"Homo Sapien"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Person</span><span class="p">.</span><span class="nf">instance_eval</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="nf">species</span>
+    <span class="s2">"Homo Sapien"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nc">Person</span><span class="o">.</span><span class="nf">species</span>
+  <span class="s2">"Homo Sapien"</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>上面全部五段代码都定义了一个返回 “Homo Sapien” 字符串的 <code class="highlighter-rouge">Person.species</code> 方法。再看看另外一段代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Person</span>
+  <span class="k">def</span> <span class="nf">name</span>
+    <span class="s2">"Matz"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Person</span><span class="p">.</span><span class="nf">class_eval</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="nf">name</span>
+    <span class="s2">"Matz"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>这段代码都是在 Person 类上定义了一个名为 <code class="highlighter-rouge">name</code> 的方法。所以 <code class="highlighter-rouge">Person.new.name</code> 将会返回 “Matz”。对于熟悉 Ruby 的人来讲，这并不是什么新鲜事情。在学习元编程的时候，这些代码都是分开独立展示的：另一种用于确定方法归属的机制。实际上，以上所有代码之所以如此工作，都可以归咎于统一的一个原因。</p>
+
+<p>首先，理解 Ruby 的 metaclass 如何工作是非常重要的。当开始学习 Ruby 的时候，你就接触了类这个概念，Ruby 中的每个对象都归属于一个类：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Person</span>
+<span class="k">end</span>
+
+<span class="no">Person</span><span class="p">.</span><span class="nf">class</span>  <span class="c1">#=&gt; Class</span>
+
+<span class="k">class</span> <span class="nc">Class</span>
+  <span class="k">def</span> <span class="nf">loud_name</span>
+    <span class="s2">"</span><span class="si">#{</span><span class="nb">name</span><span class="p">.</span><span class="nf">upcase</span><span class="si">}</span><span class="s2">!"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Person</span><span class="p">.</span><span class="nf">loud_name</span>  <span class="c1">#=&gt; "PERSON!"</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">Person</code> 是 <code class="highlighter-rouge">Class</code> 类的一个实例，所以任何添加给 <code class="highlighter-rouge">Class</code> 类的方法在 <code class="highlighter-rouge">Person</code> 中都有效。但是有一点他们没有告诉你，其实，Ruby 中的每一个对象还拥有自己的 metaclass，也是一个可以拥有方法的 <code class="highlighter-rouge">Class</code>，但是只关联于对象自己。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">matz</span> <span class="o">=</span> <span class="no">Object</span><span class="p">.</span><span class="nf">new</span>
+<span class="k">def</span> <span class="nc">matz</span><span class="o">.</span><span class="nf">speak</span>
+  <span class="s2">"Place your burden to machine's shoulders"</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>当我们给 <code class="highlighter-rouge">matz</code> 的 metaclass 添加了方法 <code class="highlighter-rouge">speak</code> 的时候发生了什么呢？其实 <code class="highlighter-rouge">matz</code> 对象先继承自它的 metaclass，然后是 Object。这之所以多少有些不太好理解的原因是 metaclass 在 Ruby 中不可见：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">matz</span> <span class="o">=</span> <span class="no">Object</span><span class="p">.</span><span class="nf">new</span>
+<span class="k">def</span> <span class="nc">matz</span><span class="o">.</span><span class="nf">speak</span>
+  <span class="s2">"Place your burden to machine's shoulders"</span>
+<span class="k">end</span>
+
+<span class="n">matz</span><span class="p">.</span><span class="nf">class</span>  <span class="c1">#=&gt; Object</span>
+</code></pre>
+</div>
+
+<p>实际上 <code class="highlighter-rouge">matz</code> 的类应该是那个不可见的 metaclass。我们可以通过下面的方法进入 metaclass：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">metaclass</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="n">matz</span><span class="p">;</span> <span class="nb">self</span><span class="p">;</span> <span class="k">end</span>
+<span class="n">metaclass</span><span class="p">.</span><span class="nf">instance_methods</span><span class="p">.</span><span class="nf">grep</span><span class="p">(</span><span class="sr">/speak/</span><span class="p">)</span>  <span class="c1">#=&gt; ["speak"]</span>
+</code></pre>
+</div>
+
+<p>这时如果是在其他相同话题的文章中，你可能已经在努力想要记住所有这些细节了；看起来有很多规则。还有，<code class="highlighter-rouge">class &lt;&lt; matz</code> 到底是什么？</p>
+
+<p>事实上，这些奇怪的规则都可以归纳为一个：掌控代码中的 <code class="highlighter-rouge">self</code>。让我们回头看看前面的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Person</span>
+  <span class="k">def</span> <span class="nf">name</span>
+    <span class="s2">"Matz"</span>
+  <span class="k">end</span>
+
+  <span class="nb">self</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt; "Person"</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>这里，我们给 <code class="highlighter-rouge">Person</code> 类添加了一个 <code class="highlighter-rouge">name</code> 方法。当我们说 <code class="highlighter-rouge">class Person</code> 时，<code class="highlighter-rouge">self</code> 直到 <code class="highlighter-rouge">Person</code> 类代码块的结尾都是其自身。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="no">Person</span><span class="p">.</span><span class="nf">class_eval</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="nf">name</span>
+    <span class="s2">"Matz"</span>
+  <span class="k">end</span>
+
+  <span class="nb">self</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt;  "Person"</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>在这，我们做了一件和上面完全相同的事：给 <code class="highlighter-rouge">Person</code> 类的实例添加了 <code class="highlighter-rouge">name</code> 方法，<code class="highlighter-rouge">class_eval</code> 将 <code class="highlighter-rouge">self</code> 设置为 <code class="highlighter-rouge">Person</code>，直到代码块的结尾。类处理起来感觉非常的直观，其实 metaclass 也同样很直观：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nc">Person</span><span class="o">.</span><span class="nf">species</span>
+  <span class="s2">"Homo Sapien"</span>
+<span class="k">end</span>
+
+<span class="no">Person</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt; "Person"</span>
+</code></pre>
+</div>
+<p>在前面 <code class="highlighter-rouge">matz</code> 的例子中，我们在 <code class="highlighter-rouge">Person</code> 的 metaclass 上定义了 <code class="highlighter-rouge">species</code> 方法。我们没去操作 <code class="highlighter-rouge">self</code>，但是你可以看到使用 <code class="highlighter-rouge">def</code> 方法并且关联到一个对象上的话，就会使方法定义到该对象的 metaclass 上。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Person</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">species</span>
+    <span class="s2">"Homo Sapien"</span>
+  <span class="k">end</span>
+
+  <span class="nb">self</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt; "Person"</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>这里，我们打开 <code class="highlighter-rouge">Person</code> 类，在代码块中将 <code class="highlighter-rouge">self</code> 设置为 <code class="highlighter-rouge">Person</code>，正如上例所示。所以，当我们将方法定义到对象 <code class="highlighter-rouge">self</code> 上时，我们其实就是将方法定义到了 <code class="highlighter-rouge">Person</code> 类的 metaclass 上。还有，你可以看到，在 Person 类里面的 <code class="highlighter-rouge">self.name</code> 和外面的 <code class="highlighter-rouge">Person.name</code> 其实是一样的。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">Person</span>
+  <span class="k">def</span> <span class="nf">species</span>
+    <span class="s2">"Homo Sapien"</span>
+  <span class="k">end</span>
+
+  <span class="nb">self</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt; ""</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>Ruby 提供了一个可以直接进入对象 metaclass 的语法。通过 <code class="highlighter-rouge">class &lt;&lt; Person</code>，我们就将代码块中的 <code class="highlighter-rouge">self</code> 设置为了 <code class="highlighter-rouge">Person</code> 类的 metaclass。所以，<code class="highlighter-rouge">species</code> 方法就添加到了 <code class="highlighter-rouge">Person</code> 类的 metaclass 上，而不是 <code class="highlighter-rouge">Person</code> 类本身。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Person</span>
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="k">def</span> <span class="nf">species</span>
+      <span class="s2">"Homo Sapien"</span>
+    <span class="k">end</span>
+
+    <span class="nb">self</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt; ""</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>这里，我们将前面的几个技巧组合使用。首先，我们打开 <code class="highlighter-rouge">Person</code> 类，让 <code class="highlighter-rouge">self</code> 等价与 <code class="highlighter-rouge">Person</code> 类。其次，我们使用 <code class="highlighter-rouge">class &lt;&lt; self</code> 让 <code class="highlighter-rouge">self</code> 等价于 <code class="highlighter-rouge">Person</code> 类的 metaclass。当我们定义 <code class="highlighter-rouge">species</code> 方法是，它就定义到了 <code class="highlighter-rouge">Person</code> 的 metaclass 上。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="no">Person</span><span class="p">.</span><span class="nf">instance_eval</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="nf">species</span>
+    <span class="s2">"Homo Sapien"</span>
+  <span class="k">end</span>
+
+  <span class="nb">self</span><span class="p">.</span><span class="nf">name</span>  <span class="c1">#=&gt; "Person"</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>在最后这个 <code class="highlighter-rouge">instance_eval</code> 的示例中做了些有意思的事情。他将 <code class="highlighter-rouge">self</code> 分为用于执行代码的 <code class="highlighter-rouge">self</code> 和用于定义方法的 <code class="highlighter-rouge">self</code> 两部分。当使用 <code class="highlighter-rouge">instance_eval</code> 时，新方法定义在 metaclass，但是 <code class="highlighter-rouge">self</code> 还是对象本身。</p>
+
+<p>上面的几个例子中，殊途同归自然地产生于 Ruby 的语义。通过上面的解释，应该明白了 <code class="highlighter-rouge">def Person.species</code>，<code class="highlighter-rouge">class &lt;&lt; Person; def species</code> 和 <code class="highlighter-rouge">class Person; class &lt;&lt; self; def species</code> 并不是特地设计了这三种方法来做同一件事情，只是因为 Ruby 灵活地考虑到你程序中特定环境下的 <code class="highlighter-rouge">self</code> 而产生的。</p>
+
+<p>另一方面，<code class="highlighter-rouge">class_eval</code> 稍有不同。因为它使用了代码块，不同于作为关键字，他可以捕捉到周围的局部变量。这可提供了强大的 DSL 能力，此外可以控制代码块中的 <code class="highlighter-rouge">self</code>。但是除此之外，它和在这里的其它结构是完全相同的。</p>
+
+<p>最后，<code class="highlighter-rouge">instance_eval</code> 将 <code class="highlighter-rouge">self</code> 分为两部分，同时也可以让你访问到定义之外的局部变量。</p>
+
+<p>在下面的表格中，创建一个新作用域指的是代码块中的语句不能访问代码块之外的局部变量。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>mechanism</th>
+      <th>method resolution</th>
+      <th>method definition</th>
+      <th>new scope?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>class Person</td>
+      <td>Person</td>
+      <td>same</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>class « Person</td>
+      <td>Person’s metaclass</td>
+      <td>same</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>Person.class_eval</td>
+      <td>Person</td>
+      <td>same</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>Person.instance_eval</td>
+      <td>Person</td>
+      <td>Person’s metaclass</td>
+      <td>no</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>需要注意的是 <code class="highlighter-rouge">class_eval</code> 仅仅在 Module（Class 继承自 Module）中有效，而且它是 <code class="highlighter-rouge">module_eval</code> 的别名。另外，Ruby 从 1.8.7 版本开始添加了 <code class="highlighter-rouge">instance_exec</code> 方法，和 <code class="highlighter-rouge">instance_eval</code> 类似，但是它允许你传入块参数。</p>
+
+<p><strong>更新</strong>：感谢 Ruby 核心团队的 Yugui <a href="http://yugui.jp/articles/846">纠正原文中的错误</a>，当时我忽略了在 <code class="highlighter-rouge">instance_eval</code> 中 <code class="highlighter-rouge">self</code> 是被分成两部分来对待的。</p>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application.js"></script>
+
+  </body>
+</html>
