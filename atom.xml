@@ -4,7 +4,7 @@
  <title>Reyes Yang 的个人博客</title>
  <link href="http://reyesyang.github.io//atom.xml" rel="self"/>
  <id>http://reyesyang.github.io/</id>
- <updated>2015-12-24T14:58:43+08:00</updated>
+ <updated>2015-12-24T21:55:10+08:00</updated>
  <author>
    <name>Reyes Yang</name>
    <uri>http://reyesyang.info</uri>
@@ -19,6 +19,16 @@
    <id>http://reyesyang.github.io//2015/12/24/metaprogramming-in-ruby-all-about-the-self</id>
    <updated>2015-12-24T00:00:00+08:00</updated>
    <content type="html">&lt;p&gt;本文翻译自 Yehuda Katz 的博客文章 &lt;a href=&quot;http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/&quot;&gt;Metaprogramming in Ruby: It’s All About the Self&lt;/a&gt;&lt;/p&gt; &lt;p&gt;在我写完上篇&lt;a href=&quot;http://yehudakatz.com/2009/11/12/better-ruby-idioms/&quot;&gt;关于 Rails 插件的惯用语法的文章&lt;/a&gt;后，我意识到 Ruby 元编程，就核心而言，其实非常简单。&lt;/p&gt; &lt;p&gt;归根结底是因为所有的 Ruby 代码都是可执行代码 —— 不需要额外的编译或者运行时阶段。在 Ruby 中，每一行代码都是针对一个特定的 &lt;code class=&quot;highlighter-rouge&quot;&gt;self&lt;/code&gt; 执行的。考虑下面五段代码：&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;species&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Homo Sapien&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt;...</content>
+ </entry>
+
+ 
+
+ <entry>
+   <title>[翻译] 词法作用域和 Ruby 中的类变量</title>
+   <link href="http://reyesyang.github.io//2015/12/24/lexical-scoping-and-ruby-class-variable.html"/>
+   <id>http://reyesyang.github.io//2015/12/24/lexical-scoping-and-ruby-class-variable</id>
+   <updated>2015-12-24T00:00:00+08:00</updated>
+   <content type="html">&lt;p&gt;本文翻译自 Starr Horne 发表在 Honeybadger 上的文章：&lt;a href=&quot;http://blog.honeybadger.io/lexical-scoping-and-ruby-class-variables/&quot;&gt;Lexical scoping and Ruby class variables&lt;/a&gt;&lt;/p&gt; &lt;p&gt;Ruby 的类变量时常让人感到迷惑。即使是有经验的 Ruby 程序员也觉得它们很难理解。最明显的一个例子就是继承：&lt;/p&gt; &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Fruit&lt;/span&gt; &lt;span class=&quot;vc&quot;&gt;@@kind&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;kind&lt;/span&gt; &lt;span class=&quot;vc&quot;&gt;@@kind&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Apple&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Fruit&lt;/span&gt; &lt;span class=&quot;vc&quot;&gt;@@kind&lt;/span&gt;...</content>
  </entry>
 
  

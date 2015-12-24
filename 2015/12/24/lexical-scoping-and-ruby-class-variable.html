@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" class="han-init">
+  <head>
+	<!-- Meta -->
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="generator" content="Jekyll">
+
+  <title>
+    
+      [翻译] 词法作用域和 Ruby 中的类变量
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/application.css">
+
+	<!-- RSS -->
+	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
+</head>
+
+
+  <body>
+    <div id="wrap">
+      <!-- Navigation -->
+      <nav id="nav">
+  <div id="nav-list">
+    <a href="/">首页</a>
+    <a href="/archives/">文章</a>
+    <a href="/about/">关于</a>
+    <a href="/atom.xml">订阅</a>
+    <a href="http://weibo.com/reyesyang">Weibo</a>
+    <a href="https://twitter.com/reyesyang">Twitter</a>
+    <a href="https://github.com/reyesyang">Github</a>
+    <a href="mailto:reyes.yang@gmail.com">Gmail</a>
+  </div>
+
+  <footer>
+	
+	<span>version 1.1.0</span>
+
+</footer>
+</nav>
+
+      <!-- Icon menu -->
+      <a href="#" id="nav-menu">
+        <div id="menu"></div>
+      </a>
+
+      <header id="header">
+	<a href="/">
+    <img src="/assets/conan.jpg" width="200" height="200" alt="conan.jpg">
+    <h3>Reyes Yang</h3>
+	</a>
+</header>
+
+
+      <!-- Main content -->
+      <div id="container">
+        <main>
+          <article id="post-page">
+	<h3>[翻译] 词法作用域和 Ruby 中的类变量</h3>		
+	<time datetime="2015-12-24T00:00:00+08:00" class="by-line">24 Dec 2015</time>
+	<div class="content">
+		<p>本文翻译自 Starr Horne 发表在 Honeybadger 上的文章：<a href="http://blog.honeybadger.io/lexical-scoping-and-ruby-class-variables/">Lexical scoping and Ruby class variables</a></p>
+
+<p>Ruby 的类变量时常让人感到迷惑。即使是有经验的 Ruby 程序员也觉得它们很难理解。最明显的一个例子就是继承：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fruit</span>
+  <span class="vc">@@kind</span> <span class="o">=</span> <span class="kp">nil</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">kind</span>
+    <span class="vc">@@kind</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Apple</span> <span class="o">&lt;</span> <span class="no">Fruit</span>
+  <span class="vc">@@kind</span> <span class="o">=</span> <span class="s2">"apple"</span>
+<span class="k">end</span>
+
+<span class="no">Apple</span><span class="p">.</span><span class="nf">kind</span>
+<span class="c1"># =&gt; "apple"</span>
+<span class="no">Fruit</span><span class="p">.</span><span class="nf">kind</span>
+<span class="c1"># =&gt; "apple"</span>
+</code></pre>
+</div>
+
+<p>在子类中修改 <code class="highlighter-rouge">@@kind</code> 的值的话，父类中的也被修改了。这实在太令人混乱了。但 Ruby 就是设计成这样工作的，这是很久以前模仿 Smalltalk 所做出的设计决策。</p>
+
+<h4 id="section">更糟糕的</h4>
+
+<p>类变量还有一些其他古怪表现的例子，看起来并不像是当初设计语言时的架构决策而故意这么实现的怪癖。今天我就说其中我觉得很有意思的一个。</p>
+
+<p>我们将看到两段代码，感觉上他们应该产生同样的结果，然而并不是。</p>
+
+<p>在第一个例子中，我们设置了一个类变量并且创建了一个方法返回它。这没有任何花哨的东西。一切都运行正常。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Foo</span>
+  <span class="vc">@@val</span> <span class="o">=</span> <span class="mi">1234</span>
+
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="k">def</span> <span class="nf">val</span>
+      <span class="vc">@@val</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Foo</span><span class="p">.</span><span class="nf">val</span>
+<span class="c1"># =&gt; 1234</span>
+</code></pre>
+</div>
+
+<p>也许你并不知道，其实 <code class="highlighter-rouge">class &lt;&lt; self</code> 不是必须放在类定义的内部的。在下面的例子中，我们把它移到外面。我们添加了一个类方法，但是它并不能访问类变量。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Bar</span>
+  <span class="vc">@@val</span> <span class="o">=</span> <span class="mi">1234</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">Bar</span>
+  <span class="k">def</span> <span class="nf">val</span>
+    <span class="vc">@@val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Bar</span><span class="p">.</span><span class="nf">val</span>
+
+<span class="c1"># warning: class variable access from toplevel</span>
+<span class="c1"># NameError: uninitialized class variable @@val in Object</span>
+</code></pre>
+</div>
+
+<p>当我们尝试通过方法访问类变量的时候，我们却得到警告和异常。发生了什么呢？</p>
+
+<h4 id="section-1">来到词法作用域</h4>
+
+<p>我已经 99% 的确信导致这古怪结果的原因是词法作用域，它也是 Ruby 中让人迷惑的一点。</p>
+
+<p>以防万一你对这个概念还不太熟悉，词法作用域指的是代码中的事物按照他们出现在代码中的位置分类工作，而不是按照他们应该属于的抽象对象模型来分类工作的。看下面的例子就很好理解了：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">B</span>
+  <span class="c1"># x and y share the same lexical scope</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">B</span>
+  <span class="c1"># z has a different lexical scope from x and y, even though it's in the same class</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<h4 id="section-2">类是按照词法来决定的</h4>
+
+<p>所以在类变量中词法作用域又是如何工作的呢？</p>
+
+<p>其实，Ruby 为了获取类变量，它不得不先确定从哪个类中搜索。Ruby 就是使用词法作用域去查找这个类的。</p>
+
+<p>如果我们再仔细看前面可以正确运行的示例，我们就能发现代码访问的类变量是本来就存在于类定义中的。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Foo</span>
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="k">def</span> <span class="nf">val</span>
+      <span class="c1"># I'm lexically scoped to Foo!</span>
+      <span class="vc">@@val</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>在不能运行的示例中，代码访问的类变量并不在类的词法作用域中。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">Foo</span>
+  <span class="k">def</span> <span class="nf">val</span>
+    <span class="c1"># Foo is nowhere in sight.</span>
+    <span class="vc">@@val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>但是如果它的词法范围不是 <code class="highlighter-rouge">Foo</code> 类的话，那是什么呢？Ruby 打印的警告信息给了我们一些线索：<code class="highlighter-rouge">warning: class variable access from toplevel</code>。</p>
+
+<p>那个不能运行的示例证明了类变量的词法范围是顶层作用域。这会导致很奇怪的行为。</p>
+
+<p>例如，如果我们尝试在词法范围是 main 的上下文中设置一个类变量，这个类变量就会设置到 <code class="highlighter-rouge">Object</code>。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Bar</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="no">Bar</span>
+  <span class="k">def</span> <span class="nf">var</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="c1"># This code is lexically scoped to the top level object.</span>
+    <span class="c1"># That means, that '@@val' will be set on `Object`, not `Bar`</span>
+    <span class="vc">@@val</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Bar</span><span class="p">.</span><span class="nf">val</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># Whaa?</span>
+<span class="no">Object</span><span class="p">.</span><span class="nf">class_variables</span>
+<span class="c1"># =&gt; [:@@foo]</span>
+</code></pre>
+</div>
+
+<h4 id="section-3">更多示例</h4>
+
+<p>有很多方法在类的词法范围之外引用类变量。它们都可能给你带来麻烦。这里几个例子供你参考：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Foo</span>
+  <span class="vc">@@foo</span> <span class="o">=</span> <span class="ss">:foo</span>
+<span class="k">end</span>
+
+<span class="c1"># This won't work</span>
+<span class="no">Foo</span><span class="p">.</span><span class="nf">class_eval</span> <span class="p">{</span> <span class="nb">puts</span> <span class="vc">@@foo</span> <span class="p">}</span>
+
+<span class="c1"># neither will this</span>
+<span class="no">Foo</span><span class="p">.</span><span class="nf">send</span> <span class="ss">:define_method</span><span class="p">,</span> <span class="ss">:x</span> <span class="k">do</span>
+  <span class="nb">puts</span> <span class="vc">@@foo</span>
+<span class="k">end</span>
+
+<span class="c1"># ..and you were't thinking about using modules, were you?</span>
+<span class="k">module</span> <span class="nn">Printable</span>
+  <span class="k">def</span> <span class="nf">foo</span>
+    <span class="nb">puts</span> <span class="vc">@@foo</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Foo</span>
+  <span class="vc">@@foo</span> <span class="o">=</span> <span class="ss">:foo</span>
+  <span class="kp">include</span> <span class="no">Printable</span>
+<span class="k">end</span>
+
+<span class="no">Foo</span><span class="p">.</span><span class="nf">new</span><span class="p">.</span><span class="nf">foo</span>
+</code></pre>
+</div>
+
+<p>现在你明白为什么大家都说不要使用 Ruby 中的类变量了吧。:)</p>
+
+	</div>
+</article>
+
+        </main>
+
+        <!-- Pagination links -->
+        
+      </div>
+
+      <!-- Footer -->
+      <footer><span>@2015 - Reyes Yang </span></footer>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/application.js"></script>
+
+  </body>
+</html>
