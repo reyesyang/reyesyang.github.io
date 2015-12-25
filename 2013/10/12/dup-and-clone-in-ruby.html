@@ -12,7 +12,7 @@
     
   </title>
 
-  <link type="text/css" rel="stylesheet" href="/assets/application-7b4a47f1e705dc9e89f6d32efba9b1bec942d90cddd96a8f16852a25da1c5c21.css">
+  <link type="text/css" rel="stylesheet" href="/assets/application-41fad5a9444ec69283765213bd3be1ea2ae7dfb91096b26533f09532bfd3a479.css">
 
 	<!-- RSS -->
 	<link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" />
@@ -49,8 +49,26 @@
       <header id="header">
 	<a href="/">
     <img src="/assets/conan-382cd5216f5adfdabb4b8d78b112daab7ca8937bf0cdd94b524a7167de64ece8.jpg" width="200" height="200" alt="conan.jpg">
-		<h1>Just Do IT!</h1>
 	</a>
+	<h1>Ruby 中的 dup 和 clone</h1>
+
+	<div>
+		<a class="author" href="/about">海龙</a> 道听途说
+
+		
+			<span class="datetime">
+				— 2013-10-12
+			</span>
+		
+	</div>
+
+	
+		<div class="tags">
+			
+				<span class="tag"> #Ruby </span>
+			
+		</div>
+	
 </header>
 
 
@@ -58,13 +76,13 @@
       <div id="container">
         <main>
           <article id="post-page">
-	<h1 class="title">
+	<!-- <h1 class="title">
 		Ruby 中的 dup 和 clone
-	</h1>
+	</h1> -->
 
-	<time datetime="2013-10-12T00:00:00+08:00" class="by-line">
+	<!-- <time datetime="2013-10-12T00:00:00+08:00" class="by-line">
 		12 Oct 2013
-	</time>
+	</time> -->
 
 	<div class="content">
 		<p><del>前段时间项目中有个地方需要在 ActiveRecord 对象被删除后继续使用对象的一些属性进行些操作，很自然想到了在删除前把对象复制一份</del>(删除说明：AR 对象调用 destroy 方法删除对象时，也只是删除了数据库中的记录，实际上该对象还是存在的，不过已经变为了 frozen 的状态)，然后就接触到了 dup 和 clone 方法，看了文档后感觉二者还是比较容易搞混淆，结合一些搜索到的资料便做个记录。</p>
